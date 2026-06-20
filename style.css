@@ -1,0 +1,116 @@
+/* 기본 초기화 및 폰트 설정 */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Pretendard', 'Malgun Gothic', sans-serif;
+}
+
+body {
+    background-color: #f0f4f8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+/* 메인 컨테이너 */
+.app-container {
+    background-color: #ffffff;
+    width: 100%;
+    max-width: 600px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    text-align: center;
+}
+
+header {
+    margin-bottom: 30px;
+}
+
+header h1 {
+    color: #2c3e50;
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+}
+
+header p {
+    color: #7f8c8d;
+    font-size: 1rem;
+}
+
+/* 질문 및 버튼 영역 */
+#question {
+    font-size: 1.3rem;
+    color: #34495e;
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+.btn-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+}
+
+.btn {
+    background-color: #ecf0f1;
+    border: 2px solid #bdc3c7;
+    border-radius: 8px;
+    padding: 15px;
+    font-size: 1.1rem;
+    color: #2c3e50;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn:hover {
+    background-color: #d5dbdb;
+    border-color: #95a5a6;
+}
+
+/* 정답/오답 피드백 색상 */
+.btn.correct {
+    background-color: #2ecc71;
+    border-color: #27ae60;
+    color: white;
+}
+
+.btn.wrong {
+    background-color: #e74c3c;
+    border-color: #c0392b;
+    color: white;
+}
+
+/* 결과 화면 및 버튼 */
+#result-container {
+    margin-top: 20px;
+}
+
+#result-container h2 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+}
+
+.action-btn {
+    margin-top: 20px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    font-size: 1.1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.action-btn:hover {
+    background-color: #2980b9;
+}
+
+/* 숨김 처리용 클래스 */
+.hide {
+    display: none;
+}
