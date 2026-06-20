@@ -2,31 +2,29 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: 'DungGeunMo', 'Malgun Gothic', sans-serif; /* 레트로 폰트 */
+    font-family: 'Jua', sans-serif; /* 귀여운 주아체 적용 */
 }
 
 body {
-    background-color: #111;
-    background-image: 
-        linear-gradient(rgba(0, 255, 0, 0.05) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0, 255, 0, 0.05) 1px, transparent 1px);
+    background-color: #fff0f5; /* 연한 핑크 파스텔 배경 */
+    background-image: radial-gradient(#ffd1dc 2px, transparent 2px);
     background-size: 30px 30px;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
     padding: 20px;
-    color: #fff;
+    color: #555;
 }
 
 .game-container {
-    background-color: #000;
-    border: 4px solid #0f0;
-    box-shadow: 0 0 20px #0f0, inset 0 0 10px #0f0;
+    background-color: #ffffff;
+    border: 4px solid #ffb6c1; /* 파스텔 핑크 테두리 */
+    box-shadow: 0 10px 25px rgba(255, 182, 193, 0.4);
     width: 100%;
-    max-width: 700px;
-    border-radius: 8px;
-    padding: 40px;
+    max-width: 650px;
+    border-radius: 25px; /* 둥근 모서리 */
+    padding: 40px 30px;
     text-align: center;
     position: relative;
 }
@@ -35,37 +33,48 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    min-height: 400px;
+    min-height: 350px;
 }
 
-.glitch-text {
-    color: #0f0;
-    font-size: 2.2rem;
+.title-text {
+    color: #ff8b94;
+    font-size: 2.5rem;
     margin-bottom: 15px;
-    text-shadow: 2px 2px #f00, -2px -2px #00f;
+    text-shadow: 2px 2px 0px #ffe4e1;
+}
+
+.screen p {
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+    color: #666;
 }
 
 .warning {
-    color: #ff0;
-    font-size: 0.9rem;
-    margin-bottom: 30px;
+    color: #ffa07a !important;
+    font-size: 1.1rem !important;
+    margin-bottom: 30px !important;
 }
 
 .hud {
     display: flex;
     justify-content: space-between;
+    margin-bottom: 25px;
+}
+
+.badge {
+    background-color: #a8e6cf;
+    color: #333;
+    padding: 8px 15px;
+    border-radius: 20px;
     font-size: 1.2rem;
-    color: #0ff;
-    border-bottom: 2px dashed #0ff;
-    padding-bottom: 10px;
-    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(168, 230, 207, 0.4);
 }
 
 #question {
-    font-size: 1.4rem;
-    color: #fff;
-    margin-bottom: 30px;
-    line-height: 1.5;
+    font-size: 1.6rem;
+    color: #4a4a4a;
+    margin-bottom: 25px;
+    line-height: 1.4;
     word-break: keep-all;
     text-align: left;
 }
@@ -73,70 +82,76 @@ body {
 .btn-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 15px;
+    gap: 12px;
 }
 
 .game-btn {
-    background-color: transparent;
-    border: 2px solid #0ff;
-    color: #0ff;
+    background-color: #fff;
+    border: 3px solid #dcdcdc;
+    color: #555;
     padding: 15px;
-    font-size: 1.2rem;
+    font-size: 1.3rem;
+    border-radius: 15px;
     cursor: pointer;
     transition: all 0.2s;
     text-align: left;
 }
 
 .game-btn:hover:not(:disabled) {
-    background-color: #0ff;
-    color: #000;
-    box-shadow: 0 0 15px #0ff;
+    background-color: #f0f8ff;
+    border-color: #a8e6cf;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 10px rgba(0,0,0,0.05);
 }
 
 .game-btn:disabled { cursor: not-allowed; opacity: 0.8; }
 
-.game-btn.correct { background-color: #0f0; border-color: #0f0; color: #000; box-shadow: 0 0 15px #0f0; }
-.game-btn.wrong { background-color: #f00; border-color: #f00; color: #fff; box-shadow: 0 0 15px #f00; }
+.game-btn.correct { background-color: #a8e6cf; border-color: #8ed6be; color: #222; }
+.game-btn.wrong { background-color: #ffb7b2; border-color: #ff9b94; color: #222; }
 
 #explanation-box {
     margin-top: 25px;
     padding: 20px;
-    background-color: rgba(0, 255, 255, 0.1);
-    border: 1px solid #0ff;
+    background-color: #fdf6e3;
+    border-radius: 15px;
+    border: 2px dashed #ffd1dc;
     text-align: left;
-    font-size: 1.1rem;
-    color: #fff;
-    line-height: 1.6;
+    font-size: 1.2rem;
+    color: #555;
+    line-height: 1.5;
 }
 
 #next-btn {
     margin-top: 20px;
     width: 100%;
     text-align: center;
-    border-color: #ff0;
-    color: #ff0;
+    background-color: #ffdac1;
+    border-color: #ffb7b2;
 }
 
-#next-btn:hover {
-    background-color: #ff0;
-    color: #000;
-    box-shadow: 0 0 15px #ff0;
-}
+#next-btn:hover { background-color: #ffb7b2; color: #fff; }
 
-.highlight { color: #ff0; font-size: 1.5em; }
+.highlight { color: #ff8b94; font-size: 1.8rem; }
 .hide { display: none !important; }
 
 /* 시작 버튼 깜빡임 효과 */
 .pulse {
-    animation: pulse-animation 1.5s infinite;
     text-align: center;
     font-size: 1.5rem;
-    border-color: #0f0;
-    color: #0f0;
+    background-color: #ff8b94;
+    color: #fff;
+    border: none;
+    animation: pulse-animation 2s infinite;
 }
 
 @keyframes pulse-animation {
-    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 255, 0, 0.7); }
-    50% { transform: scale(1.05); box-shadow: 0 0 10px 10px rgba(0, 255, 0, 0); }
-    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 255, 0, 0); }
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 139, 148, 0.7); }
+    50% { transform: scale(1.05); box-shadow: 0 0 10px 10px rgba(255, 139, 148, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 139, 148, 0); }
+}
+
+#restart-btn {
+    background-color: #a8e6cf;
+    border-color: #8ed6be;
+    text-align: center;
 }
