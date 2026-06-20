@@ -1,23 +1,54 @@
-// 1. 오디오 객체 생성 및 초기 설정
-const bgm = new Audio('bgm.mp3');
-bgm.loop = true; 
-bgm.volume = 0.4; // 배경음악 볼륨 조절 (40%)
+// 1. Web Audio API 기반 오디오 시스템 (MP3 파일 불필요)
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+let bgmInterval;
 
-const correctSound = new Audio('correct.mp3');
-const wrongSound = new Audio('wrong.mp3');
-const clickSound = new Audio('click.mp3'); // 화면 전환 및 버튼 클릭용 효과음
-
-// 오디오 재생을 위한 안정화 함수 (브라우저 자동재생 차단 방지)
-function playAudio(audioElement) {
-    audioElement.currentTime = 0;
-    audioElement.play().catch(error => {
-        console.warn("브라우저 정책에 의해 오디오 재생이 차단되었습니다.", error);
-    });
+// 특정 주파수의 소리를 내는 합성기 함수
+function playTone(freq, type, duration, vol) {
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    
+    gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+    
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    
+    osc.start();
+    osc.stop(audioCtx.currentTime + duration);
 }
 
-// 2. 유럽 단원 50문항 은행 데이터 (전체 통합본)
+// 효과음 함수들
+function playClickSound() { playTone(600, 'sine', 0.1, 0.1); }
+function playCorrectSound() {
+    playTone(523.25, 'sine', 0.1, 0.1); // C5
+    setTimeout(() => playTone(659.25, 'sine', 0.1, 0.1), 100); // E5
+    setTimeout(() => playTone(783.99, 'sine', 0.3, 0.15), 200); // G5
+}
+function playWrongSound() {
+    playTone(300, 'sawtooth', 0.3, 0.1);
+    setTimeout(() => playTone(250, 'sawtooth', 0.4, 0.1), 150);
+}
+
+// 귀여운 8비트 느낌의 배경음악 루프
+function startBGM() {
+    if (bgmInterval) clearInterval(bgmInterval);
+    const notes = [392.00, 329.63, 261.63, 329.63]; // G4, E4, C4, E4
+    let i = 0;
+    bgmInterval = setInterval(() => {
+        playTone(notes[i], 'triangle', 0.3, 0.03); // 볼륨을 매우 작게(0.03) 설정
+        i = (i + 1) % notes.length;
+    }, 500);
+}
+function stopBGM() {
+    if (bgmInterval) clearInterval(bgmInterval);
+}
+
+// 2. 유럽 단원 50문항 은행 데이터
 const questionBank = [
-    // [1] 지형 및 기후
     { q: "1. 유럽을 정치, 경제, 문화를 고려하여 구분할 때 영국, 프랑스, 독일 등이 속하는 지역은?", options: ["북부 유럽", "동부 유럽", "서부 유럽", "남부 유럽"], ans: 2, exp: "산업과 경제가 발달한 서부 유럽에는 영국, 프랑스, 독일, 스위스, 네덜란드 등이 있습니다." },
     { q: "2. 다음 중 남부 유럽에 위치한 국가가 아닌 것은?", options: ["에스파냐", "이탈리아", "그리스", "스웨덴"], ans: 3, exp: "스웨덴은 교육과 의료 등의 복지가 발달한 북부 유럽에 속합니다. 남부 유럽에는 에스파냐, 이탈리아, 그리스 등이 있습니다." },
     { q: "3. 아시아 대륙과 유럽 대륙을 구분하는 지리적 기준이 되는 산맥은?", options: ["알프스산맥", "우랄산맥", "아펜니노산맥", "피레네산맥"], ans: 1, exp: "우랄산맥과 캅카스산맥은 아시아와 유럽을 구분하는 지리적 기준이 됩니다." },
@@ -32,13 +63,11 @@ const questionBank = [
     { q: "12. 지중해성 기후 지역인 그리스 산토리니섬에서 가옥의 외벽을 주로 흰색으로 칠하는 까닭은?", options: ["겨울철 추위를 막기 위해", "여름철 강한 햇빛을 차단하기 위해", "바람을 막기 위해", "비를 모으기 위해"], ans: 1, exp: "지중해성 기후의 여름은 고온 건조하므로, 강한 햇빛(일사)을 반사하기 위해 집을 흰색으로 칠합니다." },
     { q: "13. 연중 비가 고르게 내려 하천의 수위가 일정해 수운 교통이 발달하기에 가장 유리한 기후는?", options: ["서안 해양성 기후", "지중해성 기후", "건조 기후", "냉대 기후"], ans: 0, exp: "서안 해양성 기후는 강수량이 연중 고르게 분포하여 독일 라인강 등 하천을 이용한 수운 교통이 발달했습니다." },
     { q: "14. 영국, 프랑스 등 서부 유럽에서 발달한 농업으로, 목초지에서 가축을 사육하며 밀 등을 재배하는 방식은?", options: ["수목 농업", "플랜테이션", "혼합 농업", "이동식 화전 농업"], ans: 2, exp: "서안 해양성 기후 지역에서는 가축 사육과 곡물 재배를 함께하는 혼합 농업이 발달하였습니다." },
-    
-    // [2] 다양한 기능과 특징을 가진 유럽의 도시
     { q: "15. 지중해 연안의 남부 유럽에서 여름철 고온 건조한 기후를 잘 견디는 올리브, 오렌지 등을 주로 재배하는 농업은?", options: ["혼합 농업", "낙농업", "수목 농업", "오아시스 농업"], ans: 2, exp: "수목 농업은 여름철 고온 건조한 지중해성 기후에 적응하기 위해 뿌리가 깊고 껍질이 두꺼운 나무를 재배하는 방식입니다." },
     { q: "16. 2021년 기준, 유럽 전체 인구 중 도시에 거주하는 인구의 비율(도시화율)은 대략 얼마인가?", options: ["약 25%", "약 50%", "약 75%", "약 90%"], ans: 2, exp: "유럽은 일찍부터 산업화와 도시화가 진행되어 전체 인구의 약 4분의 3(75%)이 도시에 거주합니다." },
     { q: "17. 다음 중 세계 금융의 중심지이자 경제·금융 분야에서 세계적으로 큰 영향력을 미치는 도시는?", options: ["런던", "로마", "아테네", "베네치아"], ans: 0, exp: "영국의 런던, 독일의 프랑크푸르트 등은 오래전부터 경제, 금융 중심지로 성장했습니다." },
     { q: "18. 과거 로마 제국의 수도였으며, 가톨릭교의 중심지인 '바티칸'이 시내에 있는 도시는?", options: ["마드리드", "파리", "로마", "빈"], ans: 2, exp: "이탈리아의 로마에는 역사가 깊은 유적이 많으며, 작은 도시 국가인 바티칸이 있습니다." },
-    { q: "19. 100여 개의 섬으로 구성되어 있으며 '아쿠아 알타(Acqua Alta)' 현상이 나타나는 이탈리아의 수상 도시는?", options: ["베네치아", "밀라노", "나폴리", "제노바"], ans: 0, exp: "베네치아는 섬과 운하로 이루어진 수상 도시로, 곤돌라가 주요 이동 수단입니다." },
+    { q: "19. 100여 개의 섬으로 구성되어 있으며 '아쿠아 알타' 현상이 나타나는 이탈리아의 수상 도시는?", options: ["베네치아", "밀라노", "나폴리", "제노바"], ans: 0, exp: "베네치아는 섬과 운하로 이루어진 수상 도시로, 곤돌라가 주요 이동 수단입니다." },
     { q: "20. 파르테논 신전이 있으며 올림픽이 최초로 열리고 민주주의가 시작된 것으로 알려진 고대 도시는?", options: ["스파르타", "아테네", "이스탄불", "알렉산드리아"], ans: 1, exp: "그리스의 아테네는 고대 서양 문명의 중심지이자 제한적 민주 정치가 실시되었던 곳입니다." },
     { q: "21. 오스트리아의 수도로 유명한 고전 음악가들이 활동한 성지이며, 예술의 도시로 불리는 곳은?", options: ["빌바오", "브뤼셀", "빈", "제네바"], ans: 2, exp: "빈(비엔나)은 음악 축제가 자주 열리는 문화, 예술의 중심지입니다." },
     { q: "22. 세계 무역 기구(WTO), 세계 보건 기구(WHO) 등 다수의 국제기구 본부가 위치해 있는 스위스의 도시는?", options: ["제네바", "취리히", "베른", "바젤"], ans: 0, exp: "스위스의 제네바는 중립국의 이점을 살려 수많은 국제기구의 본부가 자리 잡고 있습니다." },
@@ -54,8 +83,6 @@ const questionBank = [
     { q: "32. 2025년부터 화석 에너지 자동차 판매를 금지하고 전기차 사용을 지원하는 등 탄소 배출 감소에 힘쓰는 노르웨이의 도시는?", options: ["오슬로", "스톡홀름", "코펜하겐", "헬싱키"], ans: 0, exp: "오슬로는 전기 자동차 세금 면제, 주차비 할인 등 적극적인 친환경 교통 정책을 펼치고 있습니다." },
     { q: "33. 스웨덴의 말뫼는 조선업이 쇠퇴한 후 오늘날 주로 어떤 산업을 중심으로 부흥하였는가?", options: ["금융 산업", "신·재생 에너지 산업", "항공 우주 산업", "제철 산업"], ans: 1, exp: "말뫼는 조선업 중심지에서 친환경 신재생 에너지 산업 및 생태 주거 단지로 변모했습니다." },
     { q: "34. 사물 인터넷(IoT), 인공지능(AI) 등의 기술을 이용하여 정보를 수집하고 자원을 효율적으로 관리하는 도시는?", options: ["스마트 도시", "전원 도시", "역사 도시", "소비 도시"], ans: 0, exp: "스마트 도시는 첨단 정보 통신 기술을 활용하여 교통, 환경 문제 등을 해결하는 도시 형태입니다." },
-
-    // [3] 유럽의 통합과 분리 움직임
     { q: "35. 1952년, 유럽 국가들이 자원을 공동으로 관리하고 경제적으로 협력하기 위해 최초로 결성한 기구는?", options: ["유럽 연합(EU)", "북대서양 조약 기구(NATO)", "유럽 경제 공동체(EEC)", "유럽 석탄 철강 공동체(ECSC)"], ans: 3, exp: "제2차 세계 대전 이후 평화와 경제 협력을 목적으로 유럽 석탄 철강 공동체(ECSC)가 먼저 출범했습니다." },
     { q: "36. 유럽 통합의 발전 순서로 가장 알맞은 것은?", options: ["ECSC → EEC → EC → EU", "EEC → ECSC → EU → EC", "EU → EC → EEC → ECSC", "ECSC → EC → EEC → EU"], ans: 0, exp: "유럽은 유럽 석탄 철강 공동체(ECSC)에서 출발하여 경제 공동체(EEC), 공동체(EC)를 거쳐 유럽 연합(EU)으로 발전했습니다." },
     { q: "37. 유럽 연합(EU)이 공식적으로 출범하여 경제적, 정치적 통합을 강화하기 시작한 연도는?", options: ["1952년", "1967년", "1993년", "2020년"], ans: 2, exp: "유럽 연합(EU)은 마스트리흐트 조약을 바탕으로 1993년에 공식 출범하였습니다." },
@@ -74,7 +101,7 @@ const questionBank = [
     { q: "50. 유럽 연합에서 탈퇴한 국가가 겪게 될 부정적인 영향으로 적절하지 않은 것은?", options: ["관세 부활로 인한 수출 감소 우려", "유럽 연합 분담금 지출 비용 절감", "국가 간 인력 채용 및 취업의 어려움 발생", "회원국 간 교역량 감소로 경제 성장 둔화"], ans: 1, exp: "분담금 비용을 절감하는 것은 긍정적인 요인(찬성 근거)이며, 관세 부활이나 인적 교류 제한은 부정적 영향에 해당합니다." }
 ];
 
-// 3. 주요 HTML 요소 선택
+// 3. 주요 HTML 요소 선택 및 게임 로직
 const startScreen = document.getElementById('start-screen');
 const quizSection = document.getElementById('quiz-section');
 const resultContainer = document.getElementById('result-container');
@@ -94,19 +121,16 @@ let currentQuestions = [];
 let currentQuestionIndex = 0;
 let score = 0;
 
-// 4. 이벤트 리스너 및 게임 로직
-
-// (1) 게임 시작 (스타트 화면에서 오디오 권한 획득)
+// 시작 버튼 클릭 (Web Audio API 활성화 및 BGM 재생)
 startGameBtn.addEventListener('click', () => {
-    playAudio(clickSound); // 클릭음 재생
-    playAudio(bgm);        // BGM 재생 시작
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    playClickSound();
+    startBGM();
     startScreen.classList.add('hide');
     startGame();
 });
 
-// (2) 퀴즈 세팅 함수
 function startGame() {
-    // 50문항 중 10문항을 무작위 셔플 후 추출
     currentQuestions = [...questionBank].sort(() => 0.5 - Math.random()).slice(0, 10);
     currentQuestionIndex = 0;
     score = 0;
@@ -117,13 +141,11 @@ function startGame() {
     showQuestion();
 }
 
-// (3) 점수판 및 진행도 업데이트
 function updateScoreBoard() {
-    progressText.innerText = `STAGE ${currentQuestionIndex + 1} / 10`;
-    scoreText.innerText = `SCORE: ${score * 100}`;
+    progressText.innerText = `문제 ${currentQuestionIndex + 1} / 10`;
+    scoreText.innerText = `점수: ${score * 10}`;
 }
 
-// (4) 질문 표시
 function showQuestion() {
     resetState();
     updateScoreBoard();
@@ -143,7 +165,6 @@ function showQuestion() {
     });
 }
 
-// (5) 상태 초기화 (다음 문제 넘어갈 때)
 function resetState() {
     explanationBox.classList.add('hide');
     nextButton.classList.add('hide');
@@ -152,7 +173,6 @@ function resetState() {
     }
 }
 
-// (6) 정답 선택 처리 및 효과음 출력
 function selectAnswer(e) {
     const selectedButton = e.target;
     const isCorrect = selectedButton.dataset.correct === "true";
@@ -160,31 +180,25 @@ function selectAnswer(e) {
     if (isCorrect) {
         selectedButton.classList.add('correct');
         score++;
-        playAudio(correctSound); // 정답 효과음
+        playCorrectSound();
     } else {
         selectedButton.classList.add('wrong');
-        playAudio(wrongSound);   // 오답 효과음
-        
-        // 오답일 경우 정답도 초록색으로 표시
+        playWrongSound();
         Array.from(answerButtonsElement.children).forEach(button => {
             if (button.dataset.correct === "true") button.classList.add('correct');
         });
     }
 
     updateScoreBoard();
-
-    // 한 번 선택 후 모든 버튼 비활성화 (중복 클릭 방지)
     Array.from(answerButtonsElement.children).forEach(button => button.disabled = true);
 
-    // 해설 표시
     explanationText.innerText = currentQuestions[currentQuestionIndex].exp;
     explanationBox.classList.remove('hide');
     nextButton.classList.remove('hide');
 }
 
-// (7) 다음 문제 버튼
 nextButton.addEventListener('click', () => {
-    playAudio(clickSound); // 클릭 효과음
+    playClickSound();
     currentQuestionIndex++;
     if (currentQuestionIndex < currentQuestions.length) {
         showQuestion();
@@ -193,17 +207,15 @@ nextButton.addEventListener('click', () => {
     }
 });
 
-// (8) 결과 화면 출력
 function showResult() {
     quizSection.classList.add('hide');
     resultContainer.classList.remove('hide');
     finalScoreElement.innerText = score;
-    bgm.pause(); // 결과창 진입 시 BGM 정지
+    stopBGM(); // 결과창 진입 시 BGM 정지
 }
 
-// (9) 재시작 버튼
 restartButton.addEventListener('click', () => {
-    playAudio(clickSound); // 클릭 효과음
-    playAudio(bgm);        // BGM 재시작
+    playClickSound();
+    startBGM();
     startGame();
 });
