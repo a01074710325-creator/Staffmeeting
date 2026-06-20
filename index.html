@@ -3,35 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>유럽 단원 몸풀기 퀴즈 캠페인</title>
+    <title>유럽 단원 몸풀기 게임 캠페인</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=DungGeunMo&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="app-container">
-        <header>
-            <h1>💡 1학년 사회 몸풀기 퀴즈 이벤트</h1>
-            <p>유럽에 대해 얼마나 알고 있나요? 총 10문제가 무작위로 출제됩니다.</p>
-        </header>
+    <div class="game-container">
+        <div id="start-screen" class="screen">
+            <h1 class="glitch-text">🎮 사회 퀴즈 아케이드 🎮</h1>
+            <p>유럽 마스터에 도전하세요!</p>
+            <p class="warning">※ 소리가 재생됩니다. 볼륨을 조절해 주세요.</p>
+            <button id="start-game-btn" class="game-btn pulse">INSERT COIN (START)</button>
+        </div>
 
-        <main id="quiz-section">
-            <div id="question-container">
-                <div class="progress-bar">
-                    <span id="progress-text">문제 1 / 10</span>
+        <main id="quiz-section" class="screen hide">
+            <header>
+                <div class="hud">
+                    <span id="progress-text">STAGE 1 / 10</span>
+                    <span id="score-text">SCORE: 0</span>
                 </div>
+            </header>
+            <div id="question-container">
                 <h2 id="question">질문이 이곳에 표시됩니다.</h2>
                 <div id="answer-buttons" class="btn-grid"></div>
                 <div id="explanation-box" class="hide">
                     <p id="explanation-text"></p>
-                    <button id="next-btn" class="action-btn hide">다음 문제로</button>
+                    <button id="next-btn" class="game-btn">NEXT STAGE ➔</button>
                 </div>
             </div>
-            
-            <div id="result-container" class="hide">
-                <h2>🎉 퀴즈 이벤트 완료!</h2>
-                <p>10문제 중 <span id="score"></span>문제를 맞혔습니다.</p>
-                <button id="restart-btn" class="action-btn">새로운 문제로 다시 도전하기</button>
-            </div>
         </main>
+        
+        <div id="result-container" class="screen hide">
+            <h2>🎉 GAME CLEAR! 🎉</h2>
+            <p>총 10문제 중 <span id="score" class="highlight"></span>문제를 맞혔습니다.</p>
+            <button id="restart-btn" class="game-btn">RETRY?</button>
+        </div>
     </div>
     <script src="script.js"></script>
 </body>
