@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>사회 수업 전 몸풀기 퀴즈 캠페인</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <h1>💡 오늘의 사회 퀴즈 이벤트</h1>
+            <p>수업 전 간단한 퀴즈를 풀고 오늘 배울 내용을 확인해 봅시다.</p>
+        </header>
+
+        <main id="quiz-section">
+            <div id="question-container">
+                <h2 id="question">질문이 이곳에 표시됩니다.</h2>
+                <div id="answer-buttons" class="btn-grid">
+                    </div>
+            </div>
+            
+            <div id="result-container" class="hide">
+                <h2>🎉 퀴즈 캠페인 완료!</h2>
+                <p>총 <span id="total-questions"></span>문제 중 <span id="score"></span>문제를 맞혔습니다.</p>
+                <button id="restart-btn" class="action-btn">다시 도전하기</button>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
